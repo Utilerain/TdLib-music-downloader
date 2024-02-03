@@ -47,6 +47,9 @@ internal static class TdLib_MusicDownloader
     private static async Task HandleAuthentication()
     {
         // Setting phone number
+        Console.Write("Insert phone number: ");
+        PhoneNumber = Console.ReadLine();
+
         await _client.ExecuteAsync(new TdApi.SetAuthenticationPhoneNumber
         {
             PhoneNumber = PhoneNumber
