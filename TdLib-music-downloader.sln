@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TdLib-music-downloader", "TdLib-music-downloader\TdLib-music-downloader.csproj", "{00CBBD98-3A0C-44AC-A465-7A60A86CB442}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TdLib-music-class", "TdLib-music-class\TdLib-music-class.csproj", "{59355C47-FEA1-48F7-BA38-E54B946642F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{00CBBD98-3A0C-44AC-A465-7A60A86CB442}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00CBBD98-3A0C-44AC-A465-7A60A86CB442}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00CBBD98-3A0C-44AC-A465-7A60A86CB442}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00CBBD98-3A0C-44AC-A465-7A60A86CB442}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59355C47-FEA1-48F7-BA38-E54B946642F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59355C47-FEA1-48F7-BA38-E54B946642F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59355C47-FEA1-48F7-BA38-E54B946642F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59355C47-FEA1-48F7-BA38-E54B946642F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {148B992F-BD09-4001-9F16-4F5A86174E54}
+	EndGlobalSection
+EndGlobal

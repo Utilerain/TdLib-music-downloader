@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>TdLib_music_class</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TDLib" Version="1.8.21" />
+    <PackageReference Include="TDLib.Api" Version="1.8.21" />
+    <PackageReference Include="tdlib.native" Version="1.8.21" />
+  </ItemGroup>
+
+</Project>
