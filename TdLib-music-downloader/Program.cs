@@ -159,12 +159,22 @@ internal static class TdLib_MusicDownloader
             case "getme":
                 Console.WriteLine(_client.GetMeAsync());
                 break;
+
             case "getchats":
                 Console.WriteLine(GetChats(Convert.ToInt16(args[0])));
                 break;
 
             case "getchat":
-                Console.WriteLine();
+                Console.WriteLine(await GetChat(Convert.ToInt32(args[0])));
+                break;
+
+            case "logout":
+                await _client.LogOutAsync();
+                _exit = true;
+                break;
+
+            case "exit":
+                _exit = true;
                 break;
 
             default: break;
