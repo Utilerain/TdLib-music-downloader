@@ -42,6 +42,11 @@ internal static class TdLib_MusicDownloader
         var currentUser = await _client.GetMeAsync();
         var fullUserName = $"{currentUser.FirstName} {currentUser.LastName}".Trim();
         Console.WriteLine($"Successfully logged in as [{currentUser.Id}] / [@{currentUser.Usernames?.ActiveUsernames[0]}] / [{fullUserName}]");
+        
+        while (!_exit)
+        {
+
+        }
     }
 
     private static async Task HandleAuthentication()
@@ -144,6 +149,25 @@ internal static class TdLib_MusicDownloader
             {
                 yield return chat;
             }
+        }
+    }
+
+    private static async Task HandleCommands(string command, string[] args)
+    {
+        switch (command)
+        {
+            case "getme":
+                Console.WriteLine(_client.GetMeAsync());
+                break;
+            case "getchats":
+                Console.WriteLine(GetChats(Convert.ToInt16(args[0])));
+                break;
+
+            case "getchat":
+                Console.WriteLine();
+                break;
+
+            default: break;
         }
     }
 }
