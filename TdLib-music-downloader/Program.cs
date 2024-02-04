@@ -45,7 +45,23 @@ internal static class TdLib_MusicDownloader
         
         while (!_exit)
         {
+            Console.WriteLine("getme - getme\ngetchats <limit> - get chats\ngetchat <id> get chat info\nlogout - logout from account\nexit - exit from app");
+            string wait = Console.ReadLine();
+            string[] temp = wait.Split(' ');
+            
+            string command = temp[0];
+            string[] args;
 
+            if (temp.Length != 0)
+            {
+                args = temp[1].Split();
+            }
+            else
+            {
+                args = null;
+            }
+            
+            await HandleCommands(command, args);
         }
     }
 
@@ -157,15 +173,34 @@ internal static class TdLib_MusicDownloader
         switch (command)
         {
             case "getme":
-                Console.WriteLine(_client.GetMeAsync());
+                var user = await _client.ExecuteAsync(new TdApi.GetMe());
+                Console.WriteLine(user.Extra);
                 break;
 
             case "getchats":
-                Console.WriteLine(GetChats(Convert.ToInt16(args[0])));
+                var limit = Convert.ToInt16(args[0]);
+                var channels = GetChats(limit);
+
+                Console.WriteLine($"Top {limit} chats:");
+
+                await foreach (var channel in channels)
+                {
+                    Console.WriteLine($"[{channel.Id}] -> [{channel.Title}]");
+                }
                 break;
 
             case "getchat":
-                Console.WriteLine(await GetChat(Convert.ToInt32(args[0])));
+                var chat = await GetChat(Convert.ToInt64(args[0]));
+                Console.WriteLine($"[{chat.Id}] -> [{chat.Title}]:\n");
+                var messages = await _client.GetChatHistoryAsync(chat.Id, limit: (int)chat.LastMessage.Id, fromMessageId: chat.LastMessage.Id);
+
+                foreach (var message in messages.Messages_)
+                {
+                    if (message.Content is TdApi.MessageContent.MessageAudio)
+                    {
+                        Console.WriteLine(((TdApi.MessageContent.MessageAudio)message.Content).Audio.FileName);
+                    }
+                }
                 break;
 
             case "logout":
@@ -181,7 +216,7 @@ internal static class TdLib_MusicDownloader
         }
     }
 
-    private static async Task<TdApi.Chat> GetChat(int chat_id)
+    private static async Task<TdApi.Chat> GetChat(long chat_id)
     {
         var chat = await _client.ExecuteAsync<TdApi.Chat>(new TdApi.GetChat { ChatId = chat_id });
 
