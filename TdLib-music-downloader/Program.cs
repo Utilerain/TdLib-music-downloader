@@ -128,4 +128,22 @@ internal static class TdLib_MusicDownloader
                 break;
         }
     }
+
+    private static async IAsyncEnumerable<TdApi.Chat> GetChats(int limit)
+    {
+        var chats = await _client.ExecuteAsync(new TdApi.GetChats {
+            Limit = limit
+        });
+
+        //get chat info in chats list
+        foreach (var chatID in chats.ChatIds)
+        {
+            var chat = await _client.ExecuteAsync<TdApi.Chat>(new TdApi.GetChat { ChatId = chatID });
+
+            if (chat.Type is TdApi.ChatType.ChatTypeSupergroup or TdApi.ChatType.ChatTypeBasicGroup or TdApi.ChatType.ChatTypePrivate)
+            {
+                yield return chat;
+            }
+        }
+    }
 }
