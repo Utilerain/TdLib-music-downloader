@@ -146,4 +146,16 @@ internal static class TdLib_MusicDownloader
             }
         }
     }
+
+    private static async Task<TdApi.Chat> GetChat(int chat_id)
+    {
+        var chat = await _client.ExecuteAsync<TdApi.Chat>(new TdApi.GetChat { ChatId = chat_id });
+
+        if (chat.Type is TdApi.ChatType.ChatTypeSupergroup or TdApi.ChatType.ChatTypeBasicGroup or TdApi.ChatType.ChatTypePrivate)
+        {
+            return chat;
+        }
+
+        return null;
+    }
 }
