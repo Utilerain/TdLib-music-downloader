@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.ComponentModel.Design;
 using TdLib;
 using TdLib.Bindings;
 using TdApi = TdLib.TdApi;
@@ -12,9 +12,11 @@ internal static class TdLib_MusicDownloader
 
     private static TdClient _client;
     private static readonly ManualResetEventSlim ReadyToAuthenticate = new();
+    
 
     private static bool _authNeeded;
     private static bool _passwordNeeded;
+    private static bool _fileDownloaded;
     private static bool _exit = false;
 
     private static async Task Main()
@@ -45,22 +47,22 @@ internal static class TdLib_MusicDownloader
         
         while (!_exit)
         {
-            Console.WriteLine("getme - getme\ngetchats <limit> - get chats\ngetchat <id> get chat info\nlogout - logout from account\nexit - exit from app");
+            Console.WriteLine("getme - getme\ngetchats <limit> - get chats\ngetchat <id> get chat info\ndownloadmusicfromchat <id> <path> - load music from chat to selected path\nlogout - logout from account\nexit - exit from app");
             string wait = Console.ReadLine();
-            string[] temp = wait.Split(' ');
+            string[] temp = wait.Split(' ', 2);
             
             string command = temp[0];
             string[] args;
 
             if (temp.Length != 0)
             {
-                args = temp[1].Split();
+                args = temp[1].Split(' ');
             }
             else
             {
                 args = null;
             }
-            
+            Console.WriteLine(String.Join(',', args));
             await HandleCommands(command, args);
         }
     }
@@ -142,6 +144,16 @@ internal static class TdLib_MusicDownloader
                 // You may trigger additional event on connection state change
                 break;
 
+            case TdApi.Update.UpdateFile:
+                TdApi.Update.UpdateFile file = (TdApi.Update.UpdateFile)update;
+                if (file.File.Local.IsDownloadingCompleted)
+                {
+                    Console.WriteLine($"Succesfully downloaded: {file.File.Local.Path}");
+                    _fileDownloaded = true;
+                    break;
+                }
+                break;
+
             default:
                 // ReSharper disable once EmptyStatement
                 ;
@@ -203,6 +215,10 @@ internal static class TdLib_MusicDownloader
                 }
                 break;
 
+            case "downloadmusicfromchat":
+                await DownloadMusicFromChat(Convert.ToInt64(args[0]));
+                break;
+
             case "logout":
                 await _client.LogOutAsync();
                 _exit = true;
@@ -218,7 +234,10 @@ internal static class TdLib_MusicDownloader
 
     private static async Task<TdApi.Chat> GetChat(long chat_id)
     {
-        var chat = await _client.ExecuteAsync<TdApi.Chat>(new TdApi.GetChat { ChatId = chat_id });
+        var chat = await _client.ExecuteAsync<TdApi.Chat>(new TdApi.GetChat 
+        { 
+            ChatId = chat_id
+        });
 
         if (chat.Type is TdApi.ChatType.ChatTypeSupergroup or TdApi.ChatType.ChatTypeBasicGroup or TdApi.ChatType.ChatTypePrivate)
         {
@@ -226,5 +245,57 @@ internal static class TdLib_MusicDownloader
         }
 
         return null;
+    }
+
+    private static async Task DownloadMusicFromChat(long chat_id, string path = "./downloads")
+    {
+        var chat = await _client.ExecuteAsync<TdApi.Chat>(new TdApi.GetChat
+        {
+            ChatId = chat_id,
+        });
+
+        List<TdApi.MessageContent.MessageAudio> audio_message_contents = new();
+
+        TdApi.Message last_loaded_message = chat.LastMessage;
+
+        long last_message_id = 0;
+
+        while (last_loaded_message.Id != last_message_id)
+        {
+            var messages = await _client.GetChatHistoryAsync(chat_id, fromMessageId: last_loaded_message.Id, limit: 100);
+            last_message_id = last_loaded_message.Id;
+
+            foreach (var message in messages.Messages_)
+            {
+                if (message.Content is TdApi.MessageContent.MessageAudio)
+                {
+                    var content = (TdApi.MessageContent.MessageAudio)message.Content;
+                    audio_message_contents.Add(content);
+                    Console.WriteLine("Add to list: " + content.Audio.FileName);
+                    last_loaded_message = message;
+                }
+            }
+        }
+
+        Console.WriteLine($"Total count: {audio_message_contents.Count}");
+        Console.WriteLine("Downloading files...");
+
+        foreach (var audio_content in audio_message_contents)
+        {
+            try
+            {
+                Console.WriteLine("Downloading: " + audio_content.Audio.FileName);
+                await _client.DownloadFileAsync(audio_content.Audio.Audio_.Id, priority: 16);
+                while (!_fileDownloaded) { } // just a solution
+
+                _fileDownloaded = false;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Can't download file: " + audio_content.Audio.FileName);
+                Console.WriteLine(ex.Message);
+            }
+        }
     }
 }
