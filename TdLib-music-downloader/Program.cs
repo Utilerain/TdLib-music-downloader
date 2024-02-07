@@ -285,7 +285,7 @@ internal static class TdLib_MusicDownloader
                 {
                     if (_file.File.Local.IsDownloadingCompleted)
                     {
-                        Console.WriteLine($"Succesfully downloaded: {file.File.Local.Path}");
+                        Console.WriteLine($"Succesfully downloaded: {_file.File.Local.Path}");
                         _fileDownloaded = true;
                         break;
                     }
