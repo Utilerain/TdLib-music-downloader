@@ -5,8 +5,8 @@ using TdApi = TdLib.TdApi;
 
 internal static class TdLib_MusicDownloader
 {
-    private const int ApiId = 94575;
-    private const string ApiHash = "a3406de8d171bb422bb6ddf3bbd800e2";
+    private const int ApiId = 94575; //you can set custom api id
+    private const string ApiHash = "a3406de8d171bb422bb6ddf3bbd800e2"; //you can set custom api hash
     private static string PhoneNumber = "";
     private const string ApplicationVersion = "1.0.0";
 
