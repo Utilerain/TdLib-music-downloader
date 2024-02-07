@@ -10,6 +10,7 @@ internal static class TdLib_MusicDownloader
     private static string PhoneNumber = "";
     private const string ApplicationVersion = "1.0.0";
 
+    private static TdApi.Update.UpdateFile _file;
     private static TdClient _client;
     private static readonly ManualResetEventSlim ReadyToAuthenticate = new();
     
@@ -145,13 +146,7 @@ internal static class TdLib_MusicDownloader
                 break;
 
             case TdApi.Update.UpdateFile:
-                TdApi.Update.UpdateFile file = (TdApi.Update.UpdateFile)update;
-                if (file.File.Local.IsDownloadingCompleted)
-                {
-                    Console.WriteLine($"Succesfully downloaded: {file.File.Local.Path}");
-                    _fileDownloaded = true;
-                    break;
-                }
+                _file = (TdApi.Update.UpdateFile)update;
                 break;
 
             default:
@@ -286,7 +281,15 @@ internal static class TdLib_MusicDownloader
             {
                 Console.WriteLine("Downloading: " + audio_content.Audio.FileName);
                 await _client.DownloadFileAsync(audio_content.Audio.Audio_.Id, priority: 16);
-                while (!_fileDownloaded) { } // just a solution
+                while (!_fileDownloaded) 
+                {
+                    if (_file.File.Local.IsDownloadingCompleted)
+                    {
+                        Console.WriteLine($"Succesfully downloaded: {file.File.Local.Path}");
+                        _fileDownloaded = true;
+                        break;
+                    }
+                }
 
                 _fileDownloaded = false;
 
