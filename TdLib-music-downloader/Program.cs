@@ -258,14 +258,14 @@ internal static class TdLib_MusicDownloader
         while (last_loaded_message.Id != last_message_id)
         {
             var messages = await _client.GetChatHistoryAsync(chat_id, fromMessageId: last_loaded_message.Id, limit: 100);
-            last_message_id = last_loaded_message.Id;
+            last_message_id = last_loaded_message.Id; //for unlimited loading message
 
             foreach (var message in messages.Messages_)
             {
-                if (message.Content is TdApi.MessageContent.MessageAudio)
+                if (message.Content is TdApi.MessageContent.MessageAudio) //checks if message's content contains audio
                 {
                     var content = (TdApi.MessageContent.MessageAudio)message.Content;
-                    audio_message_contents.Add(content);
+                    audio_message_contents.Add(content); //add to list for download
                     Console.WriteLine("Add to list: " + content.Audio.FileName);
                     last_loaded_message = message;
                 }
