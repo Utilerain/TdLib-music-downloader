@@ -22,7 +22,6 @@ internal static class TdLib_MusicDownloader
 
     private static async Task Main()
     {
-        _client = new TdClient();
         // Creating Telegram client and setting minimal verbosity to Fatal since we don't need a lot of logs :)
         _client = new TdClient();
         _client.Bindings.SetLogVerbosityLevel(TdLogLevel.Fatal);
@@ -181,7 +180,7 @@ internal static class TdLib_MusicDownloader
         {
             case "getme":
                 var user = await _client.ExecuteAsync(new TdApi.GetMe());
-                Console.WriteLine(user.Extra);
+                Console.WriteLine(Newtonsoft.Json.Serialization.Se user);
                 break;
 
             case "getchats":
