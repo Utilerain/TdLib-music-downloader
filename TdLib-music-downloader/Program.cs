@@ -180,7 +180,7 @@ internal static class TdLib_MusicDownloader
         {
             case "getme":
                 var user = await _client.ExecuteAsync(new TdApi.GetMe());
-                Console.WriteLine(Newtonsoft.Json.Serialization.Se user);
+                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(user));
                 break;
 
             case "getchats":
