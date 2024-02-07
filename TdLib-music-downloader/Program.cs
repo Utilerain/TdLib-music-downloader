@@ -17,7 +17,6 @@ internal static class TdLib_MusicDownloader
 
     private static bool _authNeeded;
     private static bool _passwordNeeded;
-    private static bool _fileDownloaded;
     private static bool _exit = false;
 
     private static async Task Main()
@@ -44,7 +43,6 @@ internal static class TdLib_MusicDownloader
         var currentUser = await _client.GetMeAsync();
         var fullUserName = $"{currentUser.FirstName} {currentUser.LastName}".Trim();
         Console.WriteLine($"Successfully logged in as [{currentUser.Id}] / [@{currentUser.Usernames?.ActiveUsernames[0]}] / [{fullUserName}]");
-        
         while (!_exit)
         {
             Console.WriteLine("getme - getme\ngetchats <limit> - get chats\ngetchat <id> get chat info\ndownloadmusicfromchat <id> <path> - load music from chat to selected path\nlogout - logout from account\nexit - exit from app");
@@ -280,17 +278,10 @@ internal static class TdLib_MusicDownloader
             {
                 Console.WriteLine("Downloading: " + audio_content.Audio.FileName);
                 await _client.DownloadFileAsync(audio_content.Audio.Audio_.Id, priority: 16);
-                while (!_fileDownloaded) 
-                {
-                    if (_file.File.Local.IsDownloadingCompleted)
-                    {
-                        Console.WriteLine($"Succesfully downloaded: {_file.File.Local.Path}");
-                        _fileDownloaded = true;
-                        break;
-                    }
-                }
+                while (!_file.File.Local.IsDownloadingCompleted) ; //solution for waiting a file download (may be used in future)
 
-                _fileDownloaded = false;
+                Console.WriteLine($"Succesfully downloaded \"{audio_content.Audio.Title}\" at \"{_file.File.Local.Path}\"");
+
             }
             catch (Exception ex)
             {
