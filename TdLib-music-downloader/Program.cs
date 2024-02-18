@@ -52,13 +52,13 @@ internal static class TdLib_MusicDownloader
             string command = temp[0];
             string[] args;
 
-            if (temp.Length != 0)
+            if (temp.Length > 1)
             {
                 args = temp[1].Split(' ');
             }
             else
             {
-                args = null;
+                args = [" "];
             }
             Console.WriteLine(String.Join(',', args));
             await HandleCommands(command, args);
