@@ -45,23 +45,32 @@ internal static class TdLib_MusicDownloader
         Console.WriteLine($"Successfully logged in as [{currentUser.Id}] / [@{currentUser.Usernames?.ActiveUsernames[0]}] / [{fullUserName}]");
         while (!_exit)
         {
-            Console.WriteLine("getme - getme\ngetchats <limit> - get chats\ngetchat <id> get chat info\ndownloadmusicfromchat <id> <path> - load music from chat to selected path\nlogout - logout from account\nexit - exit from app");
-            string wait = Console.ReadLine();
-            string[] temp = wait.Split(' ', 2);
-            
-            string command = temp[0];
-            string[] args;
+            try
+            {
+                Console.WriteLine();
+                Console.WriteLine("getme - getme\ngetchats <limit> - get chats\ngetchat <id> get chat info\ndownloadmusicfromchat <id> <path> - load music from chat to selected path\nlogout - logout from account\nexit - exit from app");
+                Console.Write("$ ");
+                string wait = Console.ReadLine();
+                string[] temp = wait.Split(' ', 2);
 
-            if (temp.Length > 1)
-            {
-                args = temp[1].Split(' ');
+                string command = temp[0];
+                string[] args;
+
+                if (temp.Length > 1)
+                {
+                    args = temp[1].Split(' ');
+                }
+                else
+                {
+                    args = [" "];
+                }
+                await HandleCommands(command, args);
             }
-            else
+            catch (Exception ex) 
             {
-                args = [" "];
+                Console.WriteLine("Oops! An error!");
+                Console.WriteLine(ex.ToString());
             }
-            Console.WriteLine(String.Join(',', args));
-            await HandleCommands(command, args);
         }
     }
 
@@ -202,11 +211,13 @@ internal static class TdLib_MusicDownloader
                 {
                     if (message.Content is TdApi.MessageContent.MessageAudio)
                     {
-                        Console.WriteLine(((TdApi.MessageContent.MessageAudio)message.Content).Audio.FileName);
+                        Console.WriteLine("Audio: " + ((TdApi.MessageContent.MessageAudio)message.Content).Audio.FileName);
                     }
                     else if (message.Content is TdApi.MessageContent.MessageText)
                     {
-                        Console.WriteLine(((TdApi.MessageContent.MessageText)message.Content).Text.Text);
+                        var user_id = ((TdApi.MessageSender.MessageSenderUser)message.SenderId).UserId;
+                        var usr = _client.GetUserAsync(user_id).Result;
+                        Console.WriteLine($"Message from {usr.FirstName}: " + ((TdApi.MessageContent.MessageText)message.Content).Text.Text);
                     }
                 }
                 break;
