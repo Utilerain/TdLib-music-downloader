@@ -196,13 +196,17 @@ internal static class TdLib_MusicDownloader
             case "getchat":
                 var chat = await GetChat(Convert.ToInt64(args[0]));
                 Console.WriteLine($"[{chat.Id}] -> [{chat.Title}]:\n");
-                var messages = await _client.GetChatHistoryAsync(chat.Id, limit: (int)chat.LastMessage.Id, fromMessageId: chat.LastMessage.Id);
+                var messages = await _client.GetChatHistoryAsync(chat.Id, fromMessageId: chat.LastMessage.Id, limit: 1000);
 
                 foreach (var message in messages.Messages_)
                 {
                     if (message.Content is TdApi.MessageContent.MessageAudio)
                     {
                         Console.WriteLine(((TdApi.MessageContent.MessageAudio)message.Content).Audio.FileName);
+                    }
+                    else if (message.Content is TdApi.MessageContent.MessageText)
+                    {
+                        Console.WriteLine(((TdApi.MessageContent.MessageText)message.Content).Text.Text);
                     }
                 }
                 break;
@@ -228,7 +232,7 @@ internal static class TdLib_MusicDownloader
     {
         var chat = await _client.ExecuteAsync<TdApi.Chat>(new TdApi.GetChat 
         { 
-            ChatId = chat_id
+            ChatId = chat_id,
         });
 
         if (chat.Type is TdApi.ChatType.ChatTypeSupergroup or TdApi.ChatType.ChatTypeBasicGroup or TdApi.ChatType.ChatTypePrivate)
@@ -241,10 +245,7 @@ internal static class TdLib_MusicDownloader
 
     private static async Task DownloadMusicFromChat(long chat_id, string path = "./downloads")
     {
-        var chat = await _client.ExecuteAsync<TdApi.Chat>(new TdApi.GetChat
-        {
-            ChatId = chat_id,
-        });
+        var chat = await GetChat(chat_id);
 
         List<TdApi.MessageContent.MessageAudio> audio_message_contents = new();
 
